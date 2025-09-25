@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlertFlow - Notification Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            background-color: white;
+            border-bottom: 1px solid var(--light-gray);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab:hover:not(.active) {
+            background-color: var(--light-gray);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-icon.info {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .card-icon.warning {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+
+        .card-icon.critical {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-footer {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-info {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .badge-warning {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-critical {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-success {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+
+        /* Alert Card Styles */
+        .alert-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .alert-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .alert-card.critical {
+            border-left-color: var(--danger);
+        }
+
+        .alert-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .alert-card.info {
+            border-left-color: var(--success);
+        }
+
+        .alert-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .alert-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .alert-card.unread {
+            background-color: #f0f4ff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1100;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+
+        /* Snooze Indicator */
+        .snooze-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .alert-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .table-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-bell"></i>
+                    <span>AlertFlow</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-role-badge badge badge-info" id="userRole">Admin</div>
+                    <div class="user-avatar">AJ</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+        <div class="container">
+            <div class="tab active" data-tab="dashboard">Dashboard</div>
+            <div class="tab" data-tab="alerts">Alerts</div>
+            <div class="tab" data-tab="analytics">Analytics</div>
+            <div class="tab" data-tab="admin" id="adminTab">Admin Panel</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard">
+                <h2>Alert Dashboard</h2>
+                <p class="subtitle">Overview of your notifications and alerts</p>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Active Alerts</div>
+                            <div class="card-icon info">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="activeAlertsCount">0</div>
+                        <div class="card-footer">Currently active alerts</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Unread Alerts</div>
+                            <div class="card-icon warning">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="unreadAlertsCount">0</div>
+                        <div class="card-footer">Alerts requiring your attention</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Snoozed Alerts</div>
+                            <div class="card-icon critical">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="snoozedAlertsCount">0</div>
+                        <div class="card-footer">Alerts you've snoozed for today</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Critical Alerts</div>
+                            <div class="card-icon critical">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="criticalAlertsCount">0</div>
+                        <div class="card-footer">High priority alerts</div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Recent Alerts</div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" id="markAllRead">Mark All as Read</button>
+                            <button class="btn btn-primary" id="snoozeAll">Snooze All for Today</button>
+                        </div>
+                    </div>
+                    <div class="alert-cards" id="recentAlertsContainer">
+                        <!-- Alert cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Alerts Tab -->
+            <div class="tab-content" id="alerts">
+                <h2>My Alerts</h2>
+                <p class="subtitle">Manage your alerts and notifications</p>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">All Alerts</div>
+                        <div class="table-actions">
+                            <div class="filter-group">
+                                <select class="form-control form-select" id="alertFilter">
+                                    <option value="all">All Alerts</option>
+                                    <option value="unread">Unread Only</option>
+                                    <option value="read">Read Only</option>
+                                    <option value="snoozed">Snoozed</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-cards" id="allAlertsContainer">
+                        <!-- Alert cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Tab -->
+            <div class="tab-content" id="analytics">
+                <h2>Analytics Dashboard</h2>
+                <p class="subtitle">System-wide metrics and insights</p>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Total Alerts</div>
+                            <div class="card-icon info">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="totalAlertsCount">0</div>
+                        <div class="card-footer">All alerts created</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Delivery Rate</div>
+                            <div class="card-icon success">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="deliveryRate">0%</div>
+                        <div class="card-footer">Alerts delivered successfully</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Read Rate</div>
+                            <div class="card-icon warning">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="readRate">0%</div>
+                        <div class="card-footer">Alerts read by users</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Avg Response Time</div>
+                            <div class="card-icon critical">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="avgResponseTime">0h</div>
+                        <div class="card-footer">Average time to read alerts</div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Alert Breakdown by Severity</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>Count</th>
+                                <th>Read Rate</th>
+                                <th>Snooze Rate</th>
+                                <th>Avg. Response Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analyticsTableBody">
+                            <!-- Analytics data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Admin Panel Tab -->
+            <div class="tab-content" id="admin">
+                <h2>Admin Panel</h2>
+                <p class="subtitle">Manage alerts and system configuration</p>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Alert Management</div>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="createAlertBtn">
+                                <i class="fas fa-plus"></i> Create New Alert
+                            </button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Severity</th>
+                                <th>Visibility</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Expires</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAlertsTable">
+                            <!-- Admin alerts will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Alert Modal -->
+    <div class="modal" id="createAlertModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Create New Alert</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createAlertForm">
+                    <div class="form-group">
+                        <label class="form-label" for="alertTitle">Alert Title</label>
+                        <input type="text" class="form-control" id="alertTitle" placeholder="Enter alert title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="alertMessage">Message Body</label>
+                        <textarea class="form-control" id="alertMessage" rows="3" placeholder="Enter alert message" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="alertSeverity">Severity</label>
+                        <select class="form-control form-select" id="alertSeverity" required>
+                            <option value="">Select severity</option>
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Visibility</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="radio" id="visibilityOrg" name="visibility" value="organization" checked>
+                                <label for="visibilityOrg">Entire Organization</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="radio" id="visibilityTeam" name="visibility" value="team">
+                                <label for="visibilityTeam">Specific Teams</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="radio" id="visibilityUser" name="visibility" value="user">
+                                <label for="visibilityUser">Specific Users</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="alertExpiry">Expiry Date</label>
+                        <input type="datetime-local" class="form-control" id="alertExpiry">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="enableReminders" checked>
+                            <label for="enableReminders">Enable reminders every 2 hours</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelCreateAlert">Cancel</button>
+                <button class="btn btn-primary" id="saveAlert">Create Alert</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Alert Modal -->
+    <div class="modal" id="editAlertModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Edit Alert</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editAlertForm">
+                    <input type="hidden" id="editAlertId">
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editAlertTitle">Alert Title</label>
+                        <input type="text" class="form-control" id="editAlertTitle" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editAlertMessage">Message Body</label>
+                        <textarea class="form-control" id="editAlertMessage" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editAlertSeverity">Severity</label>
+                        <select class="form-control form-select" id="editAlertSeverity" required>
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editAlertStatus">Status</label>
+                        <select class="form-control form-select" id="editAlertStatus" required>
+                            <option value="active">Active</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editAlertExpiry">Expiry Date</label>
+                        <input type="datetime-local" class="form-control" id="editAlertExpiry">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="editEnableReminders">
+                            <label for="editEnableReminders">Enable reminders every 2 hours</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="deleteAlert">Delete Alert</button>
+                <div>
+                    <button class="btn btn-outline" id="cancelEditAlert">Cancel</button>
+                    <button class="btn btn-primary" id="updateAlert">Update Alert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="toast-message">Operation completed successfully!</div>
+    </div>
+
+    <script>
+        // ===============================
+        // OOP ALERT SYSTEM IMPLEMENTATION
+        // ===============================
+
+        class Alert {
+            constructor(id, title, message, severity, createdBy) {
+                this._id = id;
+                this._title = title;
+                this._message = message;
+                this._severity = severity;
+                this._createdBy = createdBy;
+                this._createdAt = new Date();
+                this._status = 'active';
+                this._reminderEnabled = true;
+                this._isRead = false;
+                this._isSnoozed = false;
+                this._deliveryChannels = ['in-app'];
+            }
+
+            // Getters and Setters
+            get id() { return this._id; }
+            get title() { return this._title; }
+            set title(value) { this._title = value; }
+            get message() { return this._message; }
+            set message(value) { this._message = value; }
+            get severity() { return this._severity; }
+            set severity(value) { this._severity = value; }
+            get status() { return this._status; }
+            set status(value) { this._status = value; }
+            get isRead() { return this._isRead; }
+            set isRead(value) { this._isRead = value; }
+            get isSnoozed() { return this._isSnoozed; }
+            set isSnoozed(value) { this._isSnoozed = value; }
+            get reminderEnabled() { return this._reminderEnabled; }
+            set reminderEnabled(value) { this._reminderEnabled = value; }
+
+            markAsRead() {
+                this._isRead = true;
+                return this;
+            }
+
+            markAsUnread() {
+                this._isRead = false;
+                return this;
+            }
+
+            snooze() {
+                this._isSnoozed = true;
+                // Set snooze expiration for 24 hours
+                const snoozeKey = `snooze_${this._id}`;
+                const snoozeUntil = new Date(Date.now() + 24 * 60 * 60 * 1000);
+                localStorage.setItem(snoozeKey, snoozeUntil.toISOString());
+                return this;
+            }
+
+            unsnooze() {
+                this._isSnoozed = false;
+                const snoozeKey = `snooze_${this._id}`;
+                localStorage.removeItem(snoozeKey);
+                return this;
+            }
+
+            checkSnoozeStatus() {
+                const snoozeKey = `snooze_${this._id}`;
+                const snoozeUntil = localStorage.getItem(snoozeKey);
+                if (snoozeUntil && new Date() > new Date(snoozeUntil)) {
+                    this.unsnooze();
+                }
+                return this._isSnoozed;
+            }
+
+            toJSON() {
+                return {
+                    id: this._id,
+                    title: this._title,
+                    message: this._message,
+                    severity: this._severity,
+                    status: this._status,
+                    isRead: this._isRead,
+                    isSnoozed: this.checkSnoozeStatus(),
+                    createdAt: this._createdAt,
+                    reminderEnabled: this._reminderEnabled
+                };
+            }
+        }
+
+        class VisibilityAlert extends Alert {
+            constructor(id, title, message, severity, createdBy, visibilityType) {
+                super(id, title, message, severity, createdBy);
+                this._visibilityType = visibilityType;
+                this._targets = [];
+                this._startTime = new Date();
+                this._expiryTime = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            }
+
+            get visibilityType() { return this._visibilityType; }
+            get targets() { return this._targets; }
+            get expiryTime() { return this._expiryTime; }
+
+            set targets(value) { this._targets = value; }
+            set expiryTime(value) { this._expiryTime = new Date(value); }
+
+            isExpired() {
+                return new Date() > this._expiryTime;
+            }
+
+            toJSON() {
+                const baseData = super.toJSON();
+                return {
+                    ...baseData,
+                    visibilityType: this._visibilityType,
+                    targets: this._targets,
+                    expiryTime: this._expiryTime,
+                    isExpired: this.isExpired()
+                };
+            }
+        }
+
+        class AlertSystem {
+            constructor() {
+                this.alerts = new Map();
+                this.nextId = 1;
+                this.initializeSampleData();
+            }
+
+            createAlert(data) {
+                const alert = new VisibilityAlert(
+                    this.nextId++,
+                    data.title,
+                    data.message,
+                    data.severity,
+                    data.createdBy || 'admin',
+                    data.visibilityType || 'organization'
+                );
+
+                if (data.expiryTime) {
+                    alert.expiryTime = data.expiryTime;
+                }
+                if (data.targets) {
+                    alert.targets = data.targets;
+                }
+                if (data.reminderEnabled !== undefined) {
+                    alert.reminderEnabled = data.reminderEnabled;
+                }
+
+                this.alerts.set(alert.id, alert);
+                return alert;
+            }
+
+            getAlert(id) {
+                return this.alerts.get(id);
+            }
+
+            updateAlert(id, updates) {
+                const alert = this.alerts.get(id);
+                if (!alert) return null;
+
+                Object.keys(updates).forEach(key => {
+                    if (alert[key] !== undefined) {
+                        alert[key] = updates[key];
+                    }
+                });
+
+                return alert;
+            }
+
+            deleteAlert(id) {
+                return this.alerts.delete(id);
+            }
+
+            getAllAlerts() {
+                return Array.from(this.alerts.values());
+            }
+
+            getActiveAlerts() {
+                return this.getAllAlerts().filter(alert => 
+                    alert.status === 'active' && !alert.isExpired()
+                );
+            }
+
+            getUnreadAlerts() {
+                return this.getActiveAlerts().filter(alert => !alert.isRead);
+            }
+
+            getSnoozedAlerts() {
+                return this.getActiveAlerts().filter(alert => alert.isSnoozed);
+            }
+
+            getCriticalAlerts() {
+                return this.getActiveAlerts().filter(alert => alert.severity === 'critical');
+            }
+
+            initializeSampleData() {
+                const sampleAlerts = [
+                    {
+                        title: "System Maintenance Scheduled",
+                        message: "There will be a scheduled system maintenance on Saturday from 2 AM to 4 AM. Please save your work.",
+                        severity: "info",
+                        visibilityType: "organization",
+                        expiryTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+                    },
+                    {
+                        title: "Security Policy Update",
+                        message: "All employees must complete the new security training by end of week.",
+                        severity: "warning",
+                        visibilityType: "organization",
+                        expiryTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                    },
+                    {
+                        title: "Critical: Server Outage",
+                        message: "We are experiencing issues with our primary server. Engineering team is investigating.",
+                        severity: "critical",
+                        visibilityType: "team",
+                        targets: ["engineering"],
+                        expiryTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000)
+                    }
+                ];
+
+                sampleAlerts.forEach(alertData => {
+                    this.createAlert(alertData);
+                });
+            }
+        }
+
+        // ===============================
+        // UI CONTROLLER
+        // ===============================
+
+        class AlertUIController {
+            constructor(alertSystem) {
+                this.alertSystem = alertSystem;
+                this.currentUser = { id: 'user1', name: 'John Doe', team: 'engineering' };
+                this.initializeEventListeners();
+                this.renderAll();
+            }
+
+            initializeEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabId = e.target.getAttribute('data-tab');
+                        this.switchTab(tabId);
+                    });
+                });
+
+                // Modal controls
+                document.getElementById('createAlertBtn').addEventListener('click', () => {
+                    this.openCreateModal();
+                });
+
+                document.querySelectorAll('.close-modal').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.closeAllModals();
+                    });
+                });
+
+                document.getElementById('cancelCreateAlert').addEventListener('click', () => {
+                    this.closeAllModals();
+                });
+
+                document.getElementById('saveAlert').addEventListener('click', () => {
+                    this.createNewAlert();
+                });
+
+                document.getElementById('cancelEditAlert').addEventListener('click', () => {
+                    this.closeAllModals();
+                });
+
+                document.getElementById('updateAlert').addEventListener('click', () => {
+                    this.updateAlert();
+                });
+
+                document.getElementById('deleteAlert').addEventListener('click', () => {
+                    this.deleteAlert();
+                });
+
+                // Alert actions
+                document.getElementById('markAllRead').addEventListener('click', () => {
+                    this.markAllAlertsRead();
+                });
+
+                document.getElementById('snoozeAll').addEventListener('click', () => {
+                    this.snoozeAllAlerts();
+                });
+
+                document.getElementById('alertFilter').addEventListener('change', (e) => {
+                    this.filterAlerts(e.target.value);
+                });
+            }
+
+            switchTab(tabId) {
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabId).classList.add('active');
+
+                // Refresh the displayed content
+                this.renderAll();
+            }
+
+            renderAll() {
+                this.updateDashboard();
+                this.renderUserAlerts();
+                this.renderAdminAlerts();
+                this.updateAnalytics();
+            }
+
+            updateDashboard() {
+                const activeAlerts = this.alertSystem.getActiveAlerts();
+                const unreadAlerts = this.alertSystem.getUnreadAlerts();
+                const snoozedAlerts = this.alertSystem.getSnoozedAlerts();
+                const criticalAlerts = this.alertSystem.getCriticalAlerts();
+
+                document.getElementById('activeAlertsCount').textContent = activeAlerts.length;
+                document.getElementById('unreadAlertsCount').textContent = unreadAlerts.length;
+                document.getElementById('snoozedAlertsCount').textContent = snoozedAlerts.length;
+                document.getElementById('criticalAlertsCount').textContent = criticalAlerts.length;
+
+                this.renderAlertCards('recentAlertsContainer', activeAlerts.slice(0, 4));
+            }
+
+            renderUserAlerts() {
+                const filter = document.getElementById('alertFilter').value;
+                let alerts = this.alertSystem.getActiveAlerts();
+
+                switch(filter) {
+                    case 'unread': alerts = alerts.filter(a => !a.isRead); break;
+                    case 'read': alerts = alerts.filter(a => a.isRead); break;
+                    case 'snoozed': alerts = alerts.filter(a => a.isSnoozed); break;
+                    case 'critical': alerts = alerts.filter(a => a.severity === 'critical'); break;
+                }
+
+                this.renderAlertCards('allAlertsContainer', alerts);
+            }
+
+            renderAdminAlerts() {
+                const alerts = this.alertSystem.getAllAlerts();
+                const tbody = document.getElementById('adminAlertsTable');
+                tbody.innerHTML = '';
+
+                alerts.forEach(alert => {
+                    const row = this.createAdminAlertRow(alert);
+                    tbody.appendChild(row);
+                });
+            }
+
+            renderAlertCards(containerId, alerts) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+
+                alerts.forEach(alert => {
+                    const card = this.createAlertCard(alert);
+                    container.appendChild(card);
+                });
+            }
+
+            createAlertCard(alert) {
+                const card = document.createElement('div');
+                card.className = `alert-card ${alert.severity} ${alert.isRead ? '' : 'unread'}`;
+                
+                const severityClass = `badge-${alert.severity}`;
+                
+                card.innerHTML = `
+                    <div class="alert-card-header">
+                        <div>
+                            <div class="alert-title">${alert.title}</div>
+                            <div class="alert-meta">
+                                <span class="badge ${severityClass}">${alert.severity.toUpperCase()}</span>
+                                <span>${this.formatDate(alert.createdAt)}</span>
+                                ${alert.isSnoozed ? '<span class="snooze-indicator"><i class="fas fa-clock"></i> Snoozed</span>' : ''}
+                            </div>
+                        </div>
+                        ${!alert.isRead ? '<span class="badge badge-warning">UNREAD</span>' : ''}
+                    </div>
+                    <div class="alert-message">${alert.message}</div>
+                    <div class="alert-actions">
+                        ${!alert.isRead ? 
+                            `<button class="btn btn-success mark-read" data-id="${alert.id}">
+                                <i class="fas fa-check"></i> Mark Read
+                            </button>` : 
+                            `<button class="btn btn-outline mark-unread" data-id="${alert.id}">
+                                <i class="fas fa-envelope"></i> Mark Unread
+                            </button>`
+                        }
+                        <button class="btn ${alert.isSnoozed ? 'btn-warning' : 'btn-outline'} snooze-alert" data-id="${alert.id}">
+                            <i class="fas fa-clock"></i> ${alert.isSnoozed ? 'Snoozed' : 'Snooze'}
+                        </button>
+                    </div>
+                `;
+
+                this.attachAlertCardEvents(card, alert);
+                return card;
+            }
+
+            attachAlertCardEvents(card, alert) {
+                card.querySelector('.mark-read')?.addEventListener('click', () => {
+                    this.markAlertAsRead(alert.id);
+                });
+
+                card.querySelector('.mark-unread')?.addEventListener('click', () => {
+                    this.markAlertAsUnread(alert.id);
+                });
+
+                card.querySelector('.snooze-alert')?.addEventListener('click', () => {
+                    this.toggleSnoozeAlert(alert.id);
+                });
+            }
+
+            createAdminAlertRow(alert) {
+                const row = document.createElement('tr');
+                const severityClass = `badge-${alert.severity}`;
+                
+                row.innerHTML = `
+                    <td>${alert.title}</td>
+                    <td><span class="badge ${severityClass}">${alert.severity.toUpperCase()}</span></td>
+                    <td>${alert.visibilityType.charAt(0).toUpperCase() + alert.visibilityType.slice(1)}</td>
+                    <td>${alert.status.charAt(0).toUpperCase() + alert.status.slice(1)}</td>
+                    <td>${this.formatDate(alert.createdAt)}</td>
+                    <td>${this.formatDate(alert.expiryTime)}</td>
+                    <td>
+                        <button class="btn btn-outline edit-alert" data-id="${alert.id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger archive-alert" data-id="${alert.id}">
+                            <i class="fas fa-archive"></i> ${alert.status === 'archived' ? 'Unarchive' : 'Archive'}
+                        </button>
+                    </td>
+                `;
+
+                row.querySelector('.edit-alert').addEventListener('click', () => {
+                    this.openEditModal(alert.id);
+                });
+
+                row.querySelector('.archive-alert').addEventListener('click', () => {
+                    this.toggleArchiveAlert(alert.id);
+                });
+
+                return row;
+            }
+
+            updateAnalytics() {
+                const alerts = this.alertSystem.getAllAlerts();
+                document.getElementById('totalAlertsCount').textContent = alerts.length;
+
+                // Simulate analytics data
+                const readRate = Math.round((alerts.filter(a => a.isRead).length / alerts.length) * 100) || 0;
+                document.getElementById('readRate').textContent = `${readRate}%`;
+
+                this.updateAnalyticsTable();
+            }
+
+            updateAnalyticsTable() {
+                const tbody = document.getElementById('analyticsTableBody');
+                const alerts = this.alertSystem.getAllAlerts();
+                
+                const severityCount = { info: 0, warning: 0, critical: 0 };
+                const readCount = { info: 0, warning: 0, critical: 0 };
+                
+                alerts.forEach(alert => {
+                    severityCount[alert.severity]++;
+                    if (alert.isRead) readCount[alert.severity]++;
+                });
+
+                tbody.innerHTML = '';
+                
+                ['critical', 'warning', 'info'].forEach(severity => {
+                    const count = severityCount[severity];
+                    const readRate = count > 0 ? Math.round((readCount[severity] / count) * 100) : 0;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><span class="badge badge-${severity}">${severity.toUpperCase()}</span></td>
+                        <td>${count}</td>
+                        <td>${readRate}%</td>
+                        <td>15%</td>
+                        <td>2.4h</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Alert Actions
+            markAlertAsRead(alertId) {
+                const alert = this.alertSystem.getAlert(alertId);
+                if (alert) {
+                    alert.markAsRead();
+                    this.showToast('Alert marked as read', 'success');
+                    this.renderAll();
+                }
+            }
+
+            markAlertAsUnread(alertId) {
+                const alert = this.alertSystem.getAlert(alertId);
+                if (alert) {
+                    alert.markAsUnread();
+                    this.showToast('Alert marked as unread', 'success');
+                    this.renderAll();
+                }
+            }
+
+            toggleSnoozeAlert(alertId) {
+                const alert = this.alertSystem.getAlert(alertId);
+                if (alert) {
+                    if (alert.isSnoozed) {
+                        alert.unsnooze();
+                        this.showToast('Alert unsnoozed', 'success');
+                    } else {
+                        alert.snooze();
+                        this.showToast('Alert snoozed for 24 hours', 'success');
+                    }
+                    this.renderAll();
+                }
+            }
+
+            markAllAlertsRead() {
+                this.alertSystem.getActiveAlerts().forEach(alert => {
+                    alert.markAsRead();
+                });
+                this.showToast('All alerts marked as read', 'success');
+                this.renderAll();
+            }
+
+            snoozeAllAlerts() {
+                this.alertSystem.getActiveAlerts().forEach(alert => {
+                    if (!alert.isSnoozed) {
+                        alert.snooze();
+                    }
+                });
+                this.showToast('All alerts snoozed for 24 hours', 'success');
+                this.renderAll();
+            }
+
+            toggleArchiveAlert(alertId) {
+                const alert = this.alertSystem.getAlert(alertId);
+                if (alert) {
+                    alert.status = alert.status === 'archived' ? 'active' : 'archived';
+                    this.showToast(`Alert ${alert.status === 'archived' ? 'archived' : 'unarchived'}`, 'success');
+                    this.renderAll();
+                }
+            }
+
+            filterAlerts(filter) {
+                this.renderUserAlerts();
+            }
+
+            // Modal Methods
+            openCreateModal() {
+                document.getElementById('createAlertModal').classList.add('active');
+            }
+
+            openEditModal(alertId) {
+                const alert = this.alertSystem.getAlert(alertId);
+                if (!alert) return;
+
+                document.getElementById('editAlertId').value = alert.id;
+                document.getElementById('editAlertTitle').value = alert.title;
+                document.getElementById('editAlertMessage').value = alert.message;
+                document.getElementById('editAlertSeverity').value = alert.severity;
+                document.getElementById('editAlertStatus').value = alert.status;
+                document.getElementById('editAlertExpiry').value = this.formatDateTimeForInput(alert.expiryTime);
+                document.getElementById('editEnableReminders').checked = alert.reminderEnabled;
+
+                document.getElementById('editAlertModal').classList.add('active');
+            }
+
+            closeAllModals() {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+
+            createNewAlert() {
+                const form = document.getElementById('createAlertForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const alertData = {
+                    title: document.getElementById('alertTitle').value,
+                    message: document.getElementById('alertMessage').value,
+                    severity: document.getElementById('alertSeverity').value,
+                    visibilityType: document.querySelector('input[name="visibility"]:checked').value,
+                    expiryTime: document.getElementById('alertExpiry').value || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                    reminderEnabled: document.getElementById('enableReminders').checked
+                };
+
+                this.alertSystem.createAlert(alertData);
+                this.showToast('Alert created successfully!', 'success');
+                this.closeAllModals();
+                form.reset();
+                this.renderAll();
+            }
+
+            updateAlert() {
+                const alertId = parseInt(document.getElementById('editAlertId').value);
+                const updates = {
+                    title: document.getElementById('editAlertTitle').value,
+                    message: document.getElementById('editAlertMessage').value,
+                    severity: document.getElementById('editAlertSeverity').value,
+                    status: document.getElementById('editAlertStatus').value,
+                    expiryTime: document.getElementById('editAlertExpiry').value,
+                    reminderEnabled: document.getElementById('editEnableReminders').checked
+                };
+
+                this.alertSystem.updateAlert(alertId, updates);
+                this.showToast('Alert updated successfully!', 'success');
+                this.closeAllModals();
+                this.renderAll();
+            }
+
+            deleteAlert() {
+                const alertId = parseInt(document.getElementById('editAlertId').value);
+                if (confirm('Are you sure you want to delete this alert?')) {
+                    this.alertSystem.deleteAlert(alertId);
+                    this.showToast('Alert deleted successfully', 'success');
+                    this.closeAllModals();
+                    this.renderAll();
+                }
+            }
+
+            // Utility Methods
+            formatDate(date) {
+                return new Date(date).toLocaleDateString() + ' ' + 
+                       new Date(date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+
+            formatDateTimeForInput(date) {
+                return new Date(date).toISOString().slice(0, 16);
+            }
+
+            showToast(message, type) {
+                const toast = document.getElementById('toast');
+                toast.className = `toast ${type} show`;
+                toast.querySelector('.toast-message').textContent = message;
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // ===============================
+        // APPLICATION INITIALIZATION
+        // ===============================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertSystem = new AlertSystem();
+            const uiController = new AlertUIController(alertSystem);
+            
+            console.log('AlertFlow System Initialized!');
+            console.log('OOP Architecture Features:');
+            console.log('- Alert base class with encapsulation');
+            console.log('- VisibilityAlert subclass with inheritance');
+            console.log('- Polymorphic methods and properties');
+            console.log('- Modular, extensible design');
+        });
+    </script>
+</body>
+</html>
